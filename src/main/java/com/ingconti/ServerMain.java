@@ -12,12 +12,15 @@ import java.util.TimerTask;
 // to test against console:
 //  /usr/bin/nc 127.0.0.1 1234
 // and type in console: server will receive.
+// it wil NOT block socket (for now..) when timeout.
 
 public class ServerMain
 {
-    static int portNumber = 1234;
-    static Boolean readLoop(BufferedReader in ){
+    static final int portNumber = 1234;
+    static final int maxRetries = 10;
 
+
+    static Boolean readLoop(BufferedReader in ){
         // waits for data and reads it in until connection dies
         // readLine() blocks until the server receives a new line from client
         String s = "";
@@ -53,30 +56,34 @@ public class ServerMain
         try {
             clientSocket = serverSocket.accept();
         } catch (IOException e) {
-
-           // e.printStackTrace();
+            e.printStackTrace();
         }
 
-            try {
-                BufferedReader in = new BufferedReader(
-                        new InputStreamReader(clientSocket.getInputStream()));
-                readLoop(in);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            System.out.println("Server done!");
-
+        try {
+            BufferedReader in = new BufferedReader(
+                    new InputStreamReader(clientSocket.getInputStream()));
+            readLoop(in);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+        System.out.println("Server done!");
+
+    }
 
     static void startMyTimer() {
+
         Timer timer = new Timer();
 
+        // lambda we pass down (to shoe another way to be called back by another class)
         TimeOutCheckerInterface timeOutChecker = (l) -> {
             System.out.println(l);
-            Boolean timeoutReached = l>3;
+            Boolean timeoutReached = l>maxRetries;
             if (timeoutReached){
+                System.out.println("Got timeout");
+                return true;
             }
+            return false;
         };
 
         TimerTask task = new TimeoutCounter(timeOutChecker);
@@ -89,18 +96,3 @@ public class ServerMain
 
 }
 
-
-
-class TimeoutCounter extends TimerTask
-{
-    TimeOutCheckerInterface timeOutChecker;
-
-    TimeoutCounter( TimeOutCheckerInterface timeOutChecker){
-        this.timeOutChecker = timeOutChecker;
-    }
-    public static int i = 0;
-    public void run()
-    {
-        timeOutChecker.check(++i);
-    }
-}
