@@ -15,6 +15,7 @@ class TimeoutCounter extends TimerTask
     {
         Boolean stop = timeOutChecker.check(++i);
         if (stop) {
+            System.out.println("Got stop inside TimerTask");
             this.cancel();
         }
     }

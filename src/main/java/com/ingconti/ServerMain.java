@@ -80,7 +80,7 @@ public class ServerMain
             System.out.println(l);
             Boolean timeoutReached = l>maxRetries;
             if (timeoutReached){
-                System.out.println("Got timeout");
+                System.out.println("Got timeout inside server class");
                 return true;
             }
             return false;
