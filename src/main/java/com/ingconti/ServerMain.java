@@ -75,7 +75,7 @@ public class ServerMain
 
         Timer timer = new Timer();
 
-        // lambda we pass down (to shoe another way to be called back by another class)
+        // lambda we pass down (to show another way to be called back by another class)
         TimeOutCheckerInterface timeOutChecker = (l) -> {
             System.out.println(l);
             Boolean timeoutReached = l>maxRetries;
