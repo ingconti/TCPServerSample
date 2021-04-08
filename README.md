@@ -1,2 +1,2 @@
-# TCPServerAndClientSample
-trivial TCP sample
+# TCPServerSample
+trivial server TCP sample
