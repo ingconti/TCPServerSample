@@ -4,6 +4,7 @@ package com.ingconti;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Timer;
@@ -20,13 +21,15 @@ public class ServerMain
     static final int maxRetries = 10;
 
 
-    static Boolean readLoop(BufferedReader in ){
+    static Boolean readLoop(BufferedReader in,  PrintWriter out ){
         // waits for data and reads it in until connection dies
         // readLine() blocks until the server receives a new line from client
         String s = "";
         try {
             while ((s = in.readLine()) != null) {
                 System.out.println(s);
+                out.println(s.toUpperCase());
+                out.flush();
             }
 
             return true;
@@ -59,10 +62,17 @@ public class ServerMain
             e.printStackTrace();
         }
 
+        PrintWriter out = null; // allocate to write answer to client.
+        try {
+            out = new PrintWriter(clientSocket.getOutputStream(), true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         try {
             BufferedReader in = new BufferedReader(
                     new InputStreamReader(clientSocket.getInputStream()));
-            readLoop(in);
+            readLoop(in, out);
         } catch (IOException e) {
             e.printStackTrace();
         }
